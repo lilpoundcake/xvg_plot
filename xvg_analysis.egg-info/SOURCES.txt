@@ -1,0 +1,14 @@
+README.md
+pyproject.toml
+tests/__init__.py
+tests/test_runner.py
+tests/test_xvg_analysis.py
+xvg_analysis/__init__.py
+xvg_analysis/xvg_analysis.py
+xvg_analysis/xvg_plot.py
+xvg_analysis.egg-info/PKG-INFO
+xvg_analysis.egg-info/SOURCES.txt
+xvg_analysis.egg-info/dependency_links.txt
+xvg_analysis.egg-info/entry_points.txt
+xvg_analysis.egg-info/requires.txt
+xvg_analysis.egg-info/top_level.txt

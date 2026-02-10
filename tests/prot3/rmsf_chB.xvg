@@ -1,0 +1,49 @@
+# This file was created Tue Jun 10 13:05:51 2025
+# Created by:
+#                       :-) GROMACS - gmx rmsf, 2023.4 (-:
+# 
+# Command line:
+#   gmx rmsf -f md_cluster_loops.xtc -s md_start_loops.pdb -n loops.ndx -res -o rmsf_chB.xvg
+# gmx rmsf is part of G R O M A C S:
+#
+# GROwing Monsters And Cloning Shrimps
+#
+@    title "RMS fluctuation"
+@    xaxis  label "Residue"
+@    yaxis  label "(nm)"
+@TYPE xy
+  179   0.0711
+  180   0.0677
+  181   0.0591
+  182   0.0549
+  183   0.0521
+  184   0.0558
+  185   0.0483
+  186   0.0578
+  187   0.0653
+  188   0.0567
+  189   0.0525
+  190   0.0605
+  191   0.0645
+  192   0.0584
+  193   0.0576
+  194   0.0614
+  195   0.0572
+  196   0.0564
+  197   0.0593
+  198   0.0592
+  199   0.0560
+  200   0.0588
+  201   0.0648
+  202   0.0735
+  203   0.0792
+  204   0.0936
+  205   0.1349
+  206   0.1140
+  207   0.1502
+  208   0.1042
+  209   0.1617
+  210   0.1819
+  211   0.1297
+  212   0.1124
+  213   0.1133

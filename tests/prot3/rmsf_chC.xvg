@@ -1,0 +1,49 @@
+# This file was created Tue Jun 10 13:06:12 2025
+# Created by:
+#                       :-) GROMACS - gmx rmsf, 2023.4 (-:
+# 
+# Command line:
+#   gmx rmsf -f md_cluster_loops.xtc -s md_start_loops.pdb -n loops.ndx -res -o rmsf_chC.xvg
+# gmx rmsf is part of G R O M A C S:
+#
+# Giant Rising Ordinary Mutants for A Clerical Setup
+#
+@    title "RMS fluctuation"
+@    xaxis  label "Residue"
+@    yaxis  label "(nm)"
+@TYPE xy
+  179   0.0777
+  180   0.0789
+  181   0.0743
+  182   0.0597
+  183   0.0662
+  184   0.0756
+  185   0.0611
+  186   0.0640
+  187   0.0569
+  188   0.0539
+  189   0.0548
+  190   0.0486
+  191   0.0591
+  192   0.0637
+  193   0.0611
+  194   0.0713
+  195   0.0834
+  196   0.0781
+  197   0.0756
+  198   0.0954
+  199   0.1050
+  200   0.1036
+  201   0.1145
+  202   0.1830
+  203   0.2412
+  204   0.2499
+  205   0.4242
+  206   0.2852
+  207   0.1436
+  208   0.1236
+  209   0.1404
+  210   0.1457
+  211   0.1509
+  212   0.1299
+  213   0.1120

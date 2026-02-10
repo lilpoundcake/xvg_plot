@@ -1,0 +1,49 @@
+# This file was created Tue Jun 10 13:05:29 2025
+# Created by:
+#                       :-) GROMACS - gmx rmsf, 2023.4 (-:
+# 
+# Command line:
+#   gmx rmsf -f md_cluster_loops.xtc -s md_start_loops.pdb -n loops.ndx -res -o rmsf_chA.xvg
+# gmx rmsf is part of G R O M A C S:
+#
+# S  C  A  M  O  R  G
+#
+@    title "RMS fluctuation"
+@    xaxis  label "Residue"
+@    yaxis  label "(nm)"
+@TYPE xy
+  179   0.0648
+  180   0.0638
+  181   0.0616
+  182   0.0533
+  183   0.0536
+  184   0.0547
+  185   0.0448
+  186   0.0442
+  187   0.0544
+  188   0.0531
+  189   0.0443
+  190   0.0541
+  191   0.0614
+  192   0.0498
+  193   0.0496
+  194   0.0531
+  195   0.0469
+  196   0.0454
+  197   0.0424
+  198   0.0435
+  199   0.0383
+  200   0.0424
+  201   0.0563
+  202   0.0661
+  203   0.0634
+  204   0.0583
+  205   0.0748
+  206   0.0600
+  207   0.0580
+  208   0.0466
+  209   0.0570
+  210   0.0564
+  211   0.0639
+  212   0.0638
+  213   0.0551
