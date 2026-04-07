@@ -1,0 +1,14 @@
+main() — CLI entry point, builds argparse parser and dispatches to subcommands
+cmd_plot() — single file plot handler
+cmd_compare() — two-file auto-detect comparison handler
+cmd_pca_compare() — PCA-specific comparison handler
+cmd_rmsf_compare() — RMSF-specific comparison handler
+cmd_sasa_compare() — SASA-specific comparison handler
+cmd_multi_compare() — N-file glob-based comparison handler
+cmd_detect() — metadata-only detection handler
+cmd_batch() — directory batch processing handler
+save_figure() — writes Plotly figure to HTML/PNG/SVG/PDF
+open_in_browser() — opens Plotly figure in browser
+add_output_arg() — shared argparse output argument builder
+add_roll_avg_arg() — shared argparse rolling average argument builder
+add_compare_args() — shared argparse comparison argument builder

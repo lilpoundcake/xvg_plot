@@ -1,0 +1,3 @@
+source: (external) pytest
+kind: external
+purpose: Test framework for test_xvg_analysis.py — provides fixtures, parametrize, assertions. Dev dependency >=7.0.0.

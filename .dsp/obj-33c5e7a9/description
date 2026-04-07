@@ -1,0 +1,3 @@
+source: (external) plotly
+kind: external
+purpose: All visualization — go.Figure, go.Scatter, go.Histogram2dContour for plots; make_subplots for grid layouts; write_html/write_image for output. Required dependency >=5.14.0.

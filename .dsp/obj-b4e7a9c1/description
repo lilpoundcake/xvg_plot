@@ -1,0 +1,3 @@
+source: xvg_plot/__init__.py
+kind: module
+purpose: Package initializer for xvg_plot — currently empty (just a comment), makes the directory a Python package.

@@ -1,0 +1,3 @@
+obj-11a3c5e7 — numpy used for numeric array operations (imported as np)
+obj-22b4d6f8 — pandas used for DataFrame-based data storage and rolling averages
+obj-33c5e7a9 — plotly used for all visualization (go.Figure, go.Scatter, Histogram2dContour, make_subplots)

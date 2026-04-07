@@ -1,0 +1,3 @@
+source: xvg_plot/xvg_analysis.py
+kind: module
+purpose: Core analysis engine — parses GROMACS XVG files, auto-detects plot types (energy, rmsd, rmsf, sasa, pca, gyration, xy), generates Plotly figures for single files, two-file comparisons, and multi-file comparisons.

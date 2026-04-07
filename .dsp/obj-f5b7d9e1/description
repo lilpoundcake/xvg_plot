@@ -1,0 +1,3 @@
+source: tests/test_runner.py
+kind: handler
+purpose: Manual test runner script — generates HTML plots for all test data (single, comparison, multi-compare) into tests/results/ for visual inspection. Not part of pytest suite.

@@ -1,0 +1,33 @@
+XVGMetadata — dataclass storing parsed metadata (title, labels, units, plot_type, legend_labels)
+parse_xvg_metadata() — reads XVG file headers, extracts metadata and data lines
+parse_data_to_dataframe() — converts data lines to pandas DataFrame with smart column naming
+classify_plot_type() — detects plot type from metadata (energy, gyration, rmsd, rmsf, sasa, pca, xy)
+read_xvg() — main entry point returning (DataFrame, XVGMetadata) tuple
+calculate_roll_avg() — computes optimal rolling window (5% of data range)
+create_plot() — dispatcher: generates Plotly figure based on detected type
+plot_energy() — energy component subplots with rolling average
+plot_gyration() — radius of gyration time series
+plot_rmsd() — RMSD time series with rolling average
+plot_rmsf() — per-residue RMSF line plot
+plot_sasa() — SASA time-series or per-residue plot
+plot_pca() — 2D density contour with viridis colormap
+plot_eigenval() — eigenvalue index plot
+plot_eigrmsf() — eigenvector RMSF plot
+plot_xy() — generic XY fallback plot
+create_flexible_plot() — auto-layout for unfamiliar XVG types using legend labels
+compare_two_plots() — dispatcher for two-file comparison plots
+compare_energy_plots() — side-by-side energy comparison
+compare_pca_plots() — side-by-side PCA contour comparison
+compare_rmsf_plots() — overlaid RMSF comparison
+compare_sasa_plots() — overlaid SASA comparison
+compare_multi_plots() — dispatcher for N-file comparison
+compare_multi_energy() — N-file energy subplot comparison
+compare_multi_pca() — N-file PCA grid comparison
+compare_multi_rmsf() — N-file RMSF overlay comparison
+compare_multi_sasa() — N-file SASA overlay comparison
+compare_multi_timeseries() — generic N-file time-series comparison
+compare_multi_generic() — generic N-file XY comparison
+PASTEL_COLORS — color palette constant for multi-file plots
+get_pastel_color() — cyclic pastel color accessor
+plot_rmsf_compare() — legacy two-file RMSF comparison
+plot_sasa_compare() — legacy two-file SASA comparison

@@ -1,0 +1,1 @@
+obj-d9e1b3f6 — CLI imports xvg_analysis as xp (from xvg_plot package) for all parsing, detection, and plot generation

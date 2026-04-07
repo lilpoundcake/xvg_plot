@@ -18,10 +18,10 @@ import shutil
 import sys
 from pathlib import Path
 
-# Add parent directory to path to import xvg_analysis
+# Add parent directory to path to import xvg_plot
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from xvg_analysis.xvg_analysis import (
+from xvg_plot.xvg_analysis import (
     read_xvg, create_plot, compare_two_plots, compare_multi_plots
 )
 

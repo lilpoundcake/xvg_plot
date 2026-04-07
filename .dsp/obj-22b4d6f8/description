@@ -1,0 +1,3 @@
+source: (external) pandas
+kind: external
+purpose: DataFrame-based data storage, column naming, numeric conversion, and rolling average computation. Required dependency >=2.0.0.

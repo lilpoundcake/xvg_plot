@@ -1,0 +1,10 @@
+TestXVGParsing — tests read_xvg return types and metadata fields
+TestPlotTypeDetection — tests classify_plot_type for all known types
+TestColumnNaming — tests automatic column name assignment
+TestRollingAverage — tests calculate_roll_avg bounds and defaults
+TestPlotGeneration — tests create_plot for each plot type
+TestPlotWidth — tests get_plot_width helper
+TestComparisons — tests two-file comparison functions
+TestRollingAverageLabels — tests RA label format in legends
+TestEdgeCases — tests error handling and fallbacks
+TestBatchProcessing — tests batch processing across test directories

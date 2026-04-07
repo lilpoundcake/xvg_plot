@@ -21,7 +21,7 @@ pip install -e .
 
 # Using micromamba/conda
 micromamba env create -f environment.yml
-micromamba activate xvg-analysis
+micromamba activate xvg-plot
 ```
 
 ## Development Commands
@@ -32,26 +32,26 @@ micromamba activate xvg-analysis
 xvg_plot [command] [options]
 
 # Or run directly:
-python -m xvg_analysis.xvg_plot [command] [options]
+python -m xvg_plot.xvg_plot [command] [options]
 ```
 
 ### Code Quality
 ```bash
 # Format code (black)
-black xvg_analysis/
+black xvg_plot/
 
 # Lint code (flake8)
-flake8 xvg_analysis/
+flake8 xvg_plot/
 
 # Type checking (mypy)
-mypy xvg_analysis/
+mypy xvg_plot/
 ```
 
 ## Architecture
 
 ### Core Modules
 
-**`xvg_analysis/xvg_analysis.py`** (main analysis engine):
+**`xvg_plot/xvg_analysis.py`** (main analysis engine):
 - `XVGMetadata`: Dataclass storing parsed metadata (title, labels, units, plot_type, legend_labels)
 - `parse_xvg_metadata()`: Reads XVG file, extracts headers and metadata
 - `parse_data_to_dataframe()`: Converts numeric data lines to pandas DataFrame with intelligent column naming
@@ -62,7 +62,7 @@ mypy xvg_analysis/
 - `compare_two_plots()`: Creates side-by-side comparison plots
 - Type-specific comparison functions: `compare_pca_plots()`, `compare_rmsf_plots()`, `compare_sasa_plots()`
 
-**`xvg_analysis/xvg_plot.py`** (CLI interface):
+**`xvg_plot/xvg_plot.py`** (CLI interface):
 - Argparse-based command dispatcher with multiple subcommands
 - Command handlers: `cmd_plot()`, `cmd_compare()`, `cmd_detect()`, `cmd_batch()`, `cmd_pca_compare()`, `cmd_rmsf_compare()`, `cmd_sasa_compare()`
 - Helper functions: `save_figure()`, `open_in_browser()`, shared argument builders (`add_output_arg()`, `add_roll_avg_arg()`)

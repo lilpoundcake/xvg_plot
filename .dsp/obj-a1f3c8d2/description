@@ -1,0 +1,3 @@
+source: pyproject.toml
+kind: config
+purpose: Project build configuration — defines package metadata, dependencies (numpy, pandas, plotly), CLI entry point (xvg_plot), and dev tool settings (black, mypy, flake8).

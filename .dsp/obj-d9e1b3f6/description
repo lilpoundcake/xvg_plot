@@ -1,0 +1,3 @@
+source: xvg_plot/xvg_plot.py
+kind: module
+purpose: CLI interface — argparse-based command dispatcher with subcommands (plot, compare, pca-compare, rmsf-compare, sasa-compare, multi-compare, detect, batch). Entry point for the `xvg_plot` console script.

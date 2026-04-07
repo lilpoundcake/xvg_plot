@@ -1,4 +1,4 @@
-name: xvg-analysis
+name: xvg-plot
 channels:
   - conda-forge
   - defaults

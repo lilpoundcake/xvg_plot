@@ -8,8 +8,8 @@ using test data files from the tests directory.
 import pytest
 import pandas as pd
 from pathlib import Path
-from xvg_analysis import xvg_analysis as xp
-from xvg_analysis.xvg_analysis import XVGMetadata
+from xvg_plot import xvg_analysis as xp
+from xvg_plot.xvg_analysis import XVGMetadata
 
 
 # Test data fixtures

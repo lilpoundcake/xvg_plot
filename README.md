@@ -2,19 +2,49 @@
 
 Interactive plotting tool for GROMACS XVG output files with automatic plot type detection, responsive layouts, and publication-ready visualizations. Originally converted from R/ggplot2 to Python/Plotly.
 
+## Examples
+
+### Single File Plots
+
+**Energy Components** — auto-detected 2x2 grid with rolling average
+
+![Energy Plot](docs/images/energy_plot.png)
+
+**RMSD** — backbone RMSD with rolling average
+
+![RMSD Plot](docs/images/rmsd_plot.png)
+
+**RMSF** — per-residue fluctuation
+
+![RMSF Plot](docs/images/rmsf_plot.png)
+
+**PCA** — 2D projection density contour (viridis)
+
+![PCA Plot](docs/images/pca_plot.png)
+
+### Comparison Plots
+
+**Two-file RMSD comparison**
+
+![RMSD Compare](docs/images/rmsd_compare.png)
+
+**Multi-file RMSF comparison** (pastel color scheme)
+
+![RMSF Multi Compare](docs/images/rmsf_multi_compare.png)
+
 ## Installation
 
 ### From wheel (recommended)
 
 ```bash
-pip install dist/xvg_analysis-1.3.0-py3-none-any.whl
+pip install dist/xvg_plot-1.3.0-py3-none-any.whl
 ```
 
 ### Using micromamba/conda
 
 ```bash
 micromamba env create -f environment.yml
-micromamba activate xvg-analysis
+micromamba activate xvg-plot
 ```
 
 ### Using pip (editable / development)
@@ -111,13 +141,13 @@ Falls back to axis-label / column-count heuristics only when the title does not 
 
 ```
 .
-├── xvg_analysis/           # Main package
+├── xvg_plot/               # Main package
 │   ├── __init__.py
 │   ├── xvg_analysis.py    # Core analysis module with plot functions
 │   └── xvg_plot.py        # CLI interface
 ├── dist/                   # Built packages
-│   ├── xvg_analysis-*.whl # Python wheel (pip install)
-│   └── xvg_analysis-*.tar.gz # Source distribution
+│   ├── xvg_plot-*.whl     # Python wheel (pip install)
+│   └── xvg_plot-*.tar.gz  # Source distribution
 ├── tests/                  # Test data and automated tests
 │   ├── prot1/             # Example XVG files (protein 1)
 │   ├── prot2/             # Example XVG files (protein 2)
@@ -148,7 +178,7 @@ tests/results/
 ## As a Python Module
 
 ```python
-from xvg_analysis import xvg_analysis as xp
+from xvg_plot import xvg_analysis as xp
 
 # Read XVG file
 df, metadata = xp.read_xvg("energy.xvg")
@@ -192,8 +222,8 @@ pip install build
 python -m build
 
 # Output in dist/:
-#   xvg_analysis-1.3.0-py3-none-any.whl   (wheel)
-#   xvg_analysis-1.3.0.tar.gz             (source)
+#   xvg_plot-1.3.0-py3-none-any.whl   (wheel)
+#   xvg_plot-1.3.0.tar.gz             (source)
 ```
 
 The wheel is platform-independent (`py3-none-any`) and can be installed on any system with Python 3.10+.
@@ -225,5 +255,5 @@ pytest tests/ -v
 pytest tests/test_xvg_analysis.py::TestXVGParsing -v
 
 # Run with coverage report
-pytest tests/ --cov=xvg_analysis
+pytest tests/ --cov=xvg_plot
 ```

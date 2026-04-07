@@ -1,0 +1,5 @@
+plotly.graph_objects — Figure, Scatter, Histogram2dContour trace types
+plotly.subplots.make_subplots — creates subplot grid layouts
+fig.write_html() — saves interactive HTML output
+fig.write_image() — saves static PNG/SVG/PDF output
+fig.show() — opens plot in browser

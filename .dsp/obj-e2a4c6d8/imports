@@ -1,0 +1,3 @@
+obj-c7d2f5a8 — imports xvg_plot.xvg_analysis module and XVGMetadata for testing all analysis functions
+obj-44d6f8b1 — uses pytest for test framework (fixtures, parametrize, assertions)
+obj-22b4d6f8 — uses pandas for DataFrame assertions and test data construction

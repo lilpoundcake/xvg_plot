@@ -1,0 +1,3 @@
+source: (external) numpy
+kind: external
+purpose: Numeric array operations — imported but primarily used indirectly via pandas. Required dependency >=1.24.0.

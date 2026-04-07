@@ -1,0 +1,5 @@
+main() — runs full test suite and prints summary
+setup_results_dir() — creates clean results directory
+test_single_file() — tests single file plot generation
+test_comparison() — tests two-file comparison
+test_multi_compare() — tests multi-file comparison
