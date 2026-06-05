@@ -56,6 +56,8 @@ mypy xvg_plot/
 - `parse_xvg_metadata()`: Reads XVG file, extracts headers and metadata
 - `parse_data_to_dataframe()`: Converts numeric data lines to pandas DataFrame with intelligent column naming
 - `classify_plot_type()`: Detects plot type from metadata (energy, gyration, rmsd, rmsf, sasa, pca, xy)
+- `clean_gromacs_label()`: Converts GROMACS xmgrace escape codes (`\S...\N`, `\s...\N`, `\f{...}`) to Plotly HTML
+- `resolve_axis_titles()`: Returns `(x_title, y_title)` preferring `metadata.x_label`/`y_label`, falling back to per-type defaults when metadata is empty. Every type-specific plot/compare function uses this — no hard-coded axis labels.
 - `read_xvg()`: Main entry point - returns DataFrame and XVGMetadata
 - `calculate_roll_avg()`: Computes optimal rolling window (5% of data range)
 - `create_plot()`: Generates Plotly figure based on detected type
@@ -90,6 +92,7 @@ mypy xvg_plot/
 ### Key Design Patterns
 
 - **Auto-detection**: No type specification needed - metadata analysis determines plot strategy
+- **Metadata-driven axis titles**: Every plot/compare function calls `resolve_axis_titles(metadata, fallback_x, fallback_y)`. Axis titles come from `@ xaxis label` / `@ yaxis label` (cleaned of GROMACS escapes) and only fall back to per-type defaults when the file has no label.
 - **Legend-based naming**: For unknown types, uses `@ s0 legend`, `@ s1 legend` entries as column headers
 - **Dynamic layout**: Energy plots adapt subgrid to column count; width scales with data range
 - **Rolling average**: Optional smoothing with auto-calculation (5% of data range when not specified)

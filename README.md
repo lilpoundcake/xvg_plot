@@ -37,7 +37,7 @@ Interactive plotting tool for GROMACS XVG output files with automatic plot type 
 ### From wheel (recommended)
 
 ```bash
-pip install dist/xvg_plot-1.3.0-py3-none-any.whl
+pip install dist/xvg_plot-1.4.0-py3-none-any.whl
 ```
 
 ### Using micromamba/conda
@@ -129,7 +129,9 @@ Falls back to axis-label / column-count heuristics only when the title does not 
 
 ### Features
 
-- **Title-driven plot type detection**: Uses `@ title "..."` from XVG headers to identify energy, gyration, rmsd, rmsf, sasa, pca, and unknown types
+- **Title-driven plot type detection**: Uses `@ title "..."` from XVG headers to identify energy, gyration, rmsd, rmsf, sasa, pca, and unknown types; falls back to a richer axis-label ladder when titles are absent
+- **Metadata-driven axis titles**: Axis titles come from `@ xaxis label` / `@ yaxis label` in the source file, so units like `(ps)` vs `(ns)` always match the data — no hard-coded labels
+- **GROMACS escape rendering**: Xmgrace formatting codes (`\S2\N` superscript, `\s...\N` subscript, `\f{...}` font switches) are converted to Plotly HTML so units like `nm²` render correctly
 - **Dynamic rolling average**: Calculates optimal rolling window size based on 5% of data range, with calculated window size displayed in legend
 - **Legend-based column names**: For unfamiliar XVG types, uses `@ s0 legend`, `@ s1 legend`, etc. as column headers
 - **Flexible grid layout**: Energy and unknown type plots adapt to number of available columns
@@ -222,8 +224,8 @@ pip install build
 python -m build
 
 # Output in dist/:
-#   xvg_plot-1.3.0-py3-none-any.whl   (wheel)
-#   xvg_plot-1.3.0.tar.gz             (source)
+#   xvg_plot-1.4.0-py3-none-any.whl   (wheel)
+#   xvg_plot-1.4.0.tar.gz             (source)
 ```
 
 The wheel is platform-independent (`py3-none-any`) and can be installed on any system with Python 3.10+.

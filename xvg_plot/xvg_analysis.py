@@ -279,9 +279,27 @@ def classify_plot_type(metadata: XVGMetadata) -> str:
         if any(kw in y_label for kw in ['kj/mol', 'k), (bar', 'kg/m']):
             return 'energy'
 
-    # PCA by axis labels
-    if n_cols == 2 and 'eigenvector' in x_label:
+    # PCA by axis labels (both axes describe eigenvectors)
+    if 'eigenvector' in x_label and 'eigenvector' in y_label:
         return 'pca'
+
+    # RMSF / fluctuation
+    if 'fluctuation' in y_label or 'rmsf' in y_label:
+        return 'rmsf'
+    if 'residue' in x_label and 'rmsf' in y_label:
+        return 'rmsf'
+
+    # RMSD
+    if 'rmsd' in y_label:
+        return 'rmsd'
+
+    # Gyration
+    if 'radius of gyration' in y_label or re.search(r'\brg\b', y_label):
+        return 'gyration'
+
+    # SASA
+    if 'area' in y_label and ('nm' in y_label):
+        return 'sasa'
 
     # Default: xy for any file with 2+ columns
     if n_cols >= 2:
@@ -335,10 +353,36 @@ def _build_y_titles_map(y_cols: List[str], y_label: str) -> Dict[str, str]:
     result: Dict[str, str] = {}
     for idx, col in enumerate(y_cols):
         if idx < len(units):
-            result[col] = f'{col} ({units[idx]})'
+            result[col] = f'{col} ({clean_gromacs_label(units[idx])})'
         else:
             result[col] = col
     return result
+
+
+_GROMACS_FONT_RE = re.compile(r'\\f\{[^}]*\}')
+_GROMACS_SUP_RE = re.compile(r'\\S(.*?)\\N')
+_GROMACS_SUB_RE = re.compile(r'\\s(.*?)\\N')
+
+
+def clean_gromacs_label(text: str) -> str:
+    """Convert GROMACS xmgrace escape codes into Plotly-compatible HTML."""
+    if not text:
+        return text
+    cleaned = _GROMACS_FONT_RE.sub('', text)
+    cleaned = _GROMACS_SUP_RE.sub(r'<sup>\1</sup>', cleaned)
+    cleaned = _GROMACS_SUB_RE.sub(r'<sub>\1</sub>', cleaned)
+    return cleaned
+
+
+def resolve_axis_titles(
+    metadata: XVGMetadata,
+    fallback_x: str,
+    fallback_y: str,
+) -> Tuple[str, str]:
+    """Return (x_title, y_title) preferring metadata, cleaned of GROMACS codes."""
+    x_title = clean_gromacs_label(metadata.x_label) if metadata.x_label else fallback_x
+    y_title = clean_gromacs_label(metadata.y_label) if metadata.y_label else fallback_y
+    return x_title, y_title
 
 
 def get_plot_width(n_cols: int) -> int:
@@ -402,9 +446,10 @@ def plot_energy(df: pd.DataFrame, metadata: XVGMetadata, roll_avg: Optional[int]
             y_title = y_titles_map.get(y_col, y_col)
             fig.update_yaxes(title_text=y_title, row=row, col=col)
 
-    fig.update_xaxes(title_text='Time (ps)', row=n_rows, col=1)
+    x_title, _ = resolve_axis_titles(metadata, 'Time (ps)', '')
+    fig.update_xaxes(title_text=x_title, row=n_rows, col=1)
     if n_cols > 1 and n_rows > 1:
-        fig.update_xaxes(title_text='Time (ps)', row=n_rows, col=n_cols)
+        fig.update_xaxes(title_text=x_title, row=n_rows, col=n_cols)
 
     fig.update_layout(
         title_text='Energy Components',
@@ -432,10 +477,11 @@ def plot_gyration(df: pd.DataFrame, metadata: XVGMetadata, roll_avg: Optional[in
         fig.add_trace(go.Scatter(x=df['Time'], y=y_ra, mode='lines',
                                 name=f'RA (n={roll_avg})', line=dict(color='navy')))
 
+    x_title, y_title = resolve_axis_titles(metadata, 'Time (ps)', 'Rg (nm)')
     fig.update_layout(
         title=f'Radius of gyration - {metadata.title}',
-        xaxis_title='Time (ps)',
-        yaxis_title='Rg (nm)',
+        xaxis_title=x_title,
+        yaxis_title=y_title,
         template='plotly_white',
         autosize=True
     )
@@ -458,10 +504,11 @@ def plot_rmsd(df: pd.DataFrame, metadata: XVGMetadata, roll_avg: Optional[int] =
         fig.add_trace(go.Scatter(x=df['Time'], y=y_ra, mode='lines',
                                 name=f'RA (n={roll_avg})', line=dict(color='navy')))
 
+    x_title, y_title = resolve_axis_titles(metadata, 'Time (ns)', 'RMSD (nm)')
     fig.update_layout(
         title=f'RMSD of backbone - {metadata.title}',
-        xaxis_title='Time (ns)',
-        yaxis_title='RMSD (nm)',
+        xaxis_title=x_title,
+        yaxis_title=y_title,
         template='plotly_white',
         autosize=True
     )
@@ -476,10 +523,11 @@ def plot_rmsf(df: pd.DataFrame, metadata: XVGMetadata) -> go.Figure:
         fig.add_trace(go.Scatter(x=df['Residue'], y=df['RMSF'], mode='lines',
                                 name='RMSF', line=dict(color='lightblue')))
 
+    x_title, y_title = resolve_axis_titles(metadata, 'Residue', 'RMSF (nm)')
     fig.update_layout(
         title=f'RMSF of Ca atoms - {metadata.title}',
-        xaxis_title='Residue',
-        yaxis_title='RMSF (nm)',
+        xaxis_title=x_title,
+        yaxis_title=y_title,
         template='plotly_white',
         autosize=True
     )
@@ -493,13 +541,15 @@ def plot_sasa(df: pd.DataFrame, metadata: XVGMetadata, roll_avg: Optional[int] =
     # Determine X column: Time (time-series) or Residue (per-residue)
     if 'Time' in df.columns:
         x_col = 'Time'
-        x_title = 'Time (ns)'
+        default_x = 'Time (ns)'
     elif 'Residue' in df.columns:
         x_col = 'Residue'
-        x_title = 'Residue'
+        default_x = 'Residue'
     else:
         x_col = df.columns[0]
-        x_title = x_col
+        default_x = x_col
+
+    x_title, y_title = resolve_axis_titles(metadata, default_x, 'Area (nm<sup>2</sup>)')
 
     if 'Area' in df.columns:
         y_data = df['Area']
@@ -521,7 +571,7 @@ def plot_sasa(df: pd.DataFrame, metadata: XVGMetadata, roll_avg: Optional[int] =
     fig.update_layout(
         title=f'Solvent Accessible Surface Area - {metadata.title}',
         xaxis_title=x_title,
-        yaxis_title='Area (nm^2)',
+        yaxis_title=y_title,
         template='plotly_white',
         autosize=True
     )
@@ -540,10 +590,11 @@ def plot_pca(df: pd.DataFrame, metadata: XVGMetadata) -> go.Figure:
             showscale=False
         ))
 
+    x_title, y_title = resolve_axis_titles(metadata, 'PC1', 'PC2')
     fig.update_layout(
         title=f'PCA Projection - {metadata.title}',
-        xaxis_title='PC1',
-        yaxis_title='PC2',
+        xaxis_title=x_title,
+        yaxis_title=y_title,
         template='plotly_white',
         autosize=True
     )
@@ -560,10 +611,11 @@ def plot_eigenval(df: pd.DataFrame, metadata: XVGMetadata) -> go.Figure:
     fig.add_trace(go.Scatter(x=df[x_col], y=df[y_col], mode='lines+markers',
                             name='Eigenvalue', line=dict(color='navy')))
 
+    x_title, y_title = resolve_axis_titles(metadata, 'Eigenvalue Index', 'Value (nm<sup>2</sup>)')
     fig.update_layout(
         title=f'Eigenvalues - {metadata.title}',
-        xaxis_title='Eigenvalue Index',
-        yaxis_title='Value (nm^2)',
+        xaxis_title=x_title,
+        yaxis_title=y_title,
         template='plotly_white',
         autosize=True
     )
@@ -578,10 +630,11 @@ def plot_eigrmsf(df: pd.DataFrame, metadata: XVGMetadata) -> go.Figure:
         fig.add_trace(go.Scatter(x=df['Residue'], y=df['RMSF'], mode='lines',
                                 name='RMSF', line=dict(color='lightblue')))
 
+    x_title, y_title = resolve_axis_titles(metadata, 'Residue', 'RMSF (nm)')
     fig.update_layout(
         title=f'Eigenvector RMSF - {metadata.title}',
-        xaxis_title='Residue',
-        yaxis_title='RMSF (nm)',
+        xaxis_title=x_title,
+        yaxis_title=y_title,
         template='plotly_white',
         autosize=True
     )
@@ -655,10 +708,11 @@ def plot_xy(df: pd.DataFrame, metadata: XVGMetadata, roll_avg: Optional[int] = N
         fig.add_trace(go.Scatter(x=df[x_col], y=y_ra, mode='lines',
                                 name=f'RA (n={roll_avg})', line=dict(color='navy')))
 
+    x_title, y_title = resolve_axis_titles(metadata, x_col, y_col)
     fig.update_layout(
         title=f'Plot - {metadata.title}',
-        xaxis_title=metadata.x_label or x_col,
-        yaxis_title=metadata.y_label or y_col,
+        xaxis_title=x_title,
+        yaxis_title=y_title,
         template='plotly_white',
         autosize=True
     )
@@ -829,9 +883,10 @@ def compare_energy_plots(df1: pd.DataFrame, df2: pd.DataFrame,
             y_title = y_titles_map.get(y_col, y_col)
             fig.update_yaxes(title_text=y_title, row=row, col=col)
 
-    fig.update_xaxes(title_text='Time (ps)', row=n_rows, col=1)
+    x_title, _ = resolve_axis_titles(meta1, 'Time (ps)', '')
+    fig.update_xaxes(title_text=x_title, row=n_rows, col=1)
     if n_cols > 1 and n_rows > 1:
-        fig.update_xaxes(title_text='Time (ps)', row=n_rows, col=n_cols)
+        fig.update_xaxes(title_text=x_title, row=n_rows, col=n_cols)
 
     fig.update_layout(
         title_text='Energy Components Comparison',
@@ -911,10 +966,11 @@ def compare_two_plots(df1: pd.DataFrame, meta1: XVGMetadata,
             fig.add_trace(go.Scatter(x=df2[x_col], y=y_ra2, mode='lines',
                                     name=f'{prot2} {y_col} RA', line=dict(color='#e84f82')))
 
+    x_title, y_title = resolve_axis_titles(meta1, 'X', 'Y')
     fig.update_layout(
         title=f'Comparison - {meta1.title}',
-        xaxis_title=meta1.x_label or 'X',
-        yaxis_title=meta1.y_label or 'Y',
+        xaxis_title=x_title,
+        yaxis_title=y_title,
         template='plotly_white',
         legend_title='Protein',
         autosize=True
@@ -952,10 +1008,11 @@ def compare_pca_plots(df1: pd.DataFrame, meta1: XVGMetadata,
         ncontours=30
     ), row=1, col=2)
 
-    fig.update_xaxes(title_text='PC1', row=1, col=1)
-    fig.update_yaxes(title_text='PC2', row=1, col=1)
-    fig.update_xaxes(title_text='PC1', row=1, col=2)
-    fig.update_yaxes(title_text='PC2', row=1, col=2)
+    x_title, y_title = resolve_axis_titles(meta1, 'PC1', 'PC2')
+    fig.update_xaxes(title_text=x_title, row=1, col=1)
+    fig.update_yaxes(title_text=y_title, row=1, col=1)
+    fig.update_xaxes(title_text=x_title, row=1, col=2)
+    fig.update_yaxes(title_text=y_title, row=1, col=2)
 
     fig.update_layout(
         title=f'PCA Comparison - {meta1.title}',
@@ -978,10 +1035,11 @@ def compare_rmsf_plots(df1: pd.DataFrame, meta1: XVGMetadata,
         fig.add_trace(go.Scatter(x=df2['Residue'], y=df2['RMSF'], mode='lines',
                                 name=prot2, line=dict(color='#e84f82')))
 
+    x_title, y_title = resolve_axis_titles(meta1, 'Residue', 'RMSF (nm)')
     fig.update_layout(
         title='RMSF of Ca atoms',
-        xaxis_title='Residue',
-        yaxis_title='RMSF (nm)',
+        xaxis_title=x_title,
+        yaxis_title=y_title,
         template='plotly_white',
         legend_title='Protein',
         autosize=True
@@ -1005,10 +1063,11 @@ def compare_sasa_plots(df1: pd.DataFrame, meta1: XVGMetadata,
         fig.add_trace(go.Scatter(x=df2['Time'], y=y_ra2, mode='lines',
                                 name=f'{prot2} SASA', line=dict(color='#e84f82')))
 
+    x_title, y_title = resolve_axis_titles(meta1, 'Time (ns)', 'Area (nm<sup>2</sup>)')
     fig.update_layout(
         title='Solvent Accessible Surface Area',
-        xaxis_title='Time (ns)',
-        yaxis_title='Area (nm^2)',
+        xaxis_title=x_title,
+        yaxis_title=y_title,
         template='plotly_white',
         legend_title='Protein',
         autosize=True
@@ -1119,9 +1178,10 @@ def compare_multi_energy(
         y_title = y_titles_map.get(y_col, y_col)
         fig.update_yaxes(title_text=y_title, row=row, col=col)
 
-    fig.update_xaxes(title_text='Time (ps)', row=n_rows, col=1)
+    x_title, _ = resolve_axis_titles(data_list[0][1], 'Time (ps)', '')
+    fig.update_xaxes(title_text=x_title, row=n_rows, col=1)
     if n_grid_cols > 1 and n_rows > 1:
-        fig.update_xaxes(title_text='Time (ps)', row=n_rows, col=n_grid_cols)
+        fig.update_xaxes(title_text=x_title, row=n_rows, col=n_grid_cols)
 
     fig.update_layout(
         title_text=f'Energy Components Comparison ({len(data_list)} files)',
@@ -1142,6 +1202,8 @@ def compare_multi_pca(
     titles = [d[2] for d in data_list]
     fig = make_subplots(rows=n_rows, cols=n_cols, subplot_titles=titles)
 
+    x_title, y_title = resolve_axis_titles(data_list[0][1], 'PC1', 'PC2')
+
     for idx, (df, meta, label) in enumerate(data_list):
         row = (idx // n_cols) + 1
         col = (idx % n_cols) + 1
@@ -1155,8 +1217,8 @@ def compare_multi_pca(
                 ncontours=30
             ), row=row, col=col)
 
-        fig.update_xaxes(title_text='PC1', row=row, col=col)
-        fig.update_yaxes(title_text='PC2', row=row, col=col)
+        fig.update_xaxes(title_text=x_title, row=row, col=col)
+        fig.update_yaxes(title_text=y_title, row=row, col=col)
 
     fig.update_layout(
         title=f'PCA Comparison ({n_files} files)',
@@ -1180,10 +1242,11 @@ def compare_multi_rmsf(
                 name=label, line=dict(color=get_pastel_color(idx))
             ))
 
+    x_title, y_title = resolve_axis_titles(data_list[0][1], 'Residue', 'RMSF (nm)')
     fig.update_layout(
         title=f'RMSF of Ca atoms ({len(data_list)} files)',
-        xaxis_title='Residue',
-        yaxis_title='RMSF (nm)',
+        xaxis_title=x_title,
+        yaxis_title=y_title,
         template='plotly_white',
         legend_title='Source',
         autosize=True
@@ -1208,10 +1271,11 @@ def compare_multi_sasa(
                 line=dict(color=get_pastel_color(idx))
             ))
 
+    x_title, y_title = resolve_axis_titles(data_list[0][1], 'Time (ns)', 'Area (nm<sup>2</sup>)')
     fig.update_layout(
         title=f'Solvent Accessible Surface Area ({len(data_list)} files)',
-        xaxis_title='Time (ns)',
-        yaxis_title='Area (nm^2)',
+        xaxis_title=x_title,
+        yaxis_title=y_title,
         template='plotly_white',
         legend_title='Source',
         autosize=True
@@ -1238,10 +1302,11 @@ def compare_multi_timeseries(
                 name=label, line=dict(color=get_pastel_color(idx))
             ))
 
+    x_title, y_title = resolve_axis_titles(data_list[0][1], 'Time (ns)', y_label)
     fig.update_layout(
         title=f'{title} ({len(data_list)} files)',
-        xaxis_title='Time (ns)',
-        yaxis_title=y_label,
+        xaxis_title=x_title,
+        yaxis_title=y_title,
         template='plotly_white',
         legend_title='Source',
         autosize=True
@@ -1269,10 +1334,11 @@ def compare_multi_generic(
             ))
 
     meta0 = data_list[0][1]
+    x_title, y_title = resolve_axis_titles(meta0, str(data_list[0][0].columns[0]), 'Y')
     fig.update_layout(
         title=f'Comparison ({len(data_list)} files) - {meta0.title}',
-        xaxis_title=meta0.x_label or data_list[0][0].columns[0],
-        yaxis_title=meta0.y_label or 'Y',
+        xaxis_title=x_title,
+        yaxis_title=y_title,
         template='plotly_white',
         legend_title='Source',
         autosize=True
